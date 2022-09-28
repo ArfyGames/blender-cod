@@ -46,7 +46,7 @@ def mesh_triangulate(mesh, vertex_cleanup):
     bm.to_mesh(mesh)
     bm.free()
 
-    mesh.update()
+    mesh.update(calc_edges=True, calc_edges_loose=True)
 
 
 def gather_exportable_objects(self, context,
@@ -505,11 +505,11 @@ def save_model(self, context, filepath, armature, objects,
         #    ob.to_mesh_clear()
         #    continue
 
-        if not mesh.uv_layers:
-            _skip_notice(ob.name, mesh.name, "No UV texture, not unwrapped?")
-            mesh.user_clear()
-            bpy.data.meshes.remove(mesh)
-            continue
+        #if not mesh.uv_layers:
+        #    _skip_notice(ob.name, mesh.name, "No UV texture, not unwrapped?")
+        #    mesh.user_clear()
+        #   bpy.data.meshes.remove(mesh)
+        #    continue
 
         meshes.append(ExportMesh(ob, mesh, materials))
 
