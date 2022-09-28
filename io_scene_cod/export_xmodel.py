@@ -183,7 +183,6 @@ class ExportMesh(object):
         self.object = obj
         self.matrix = obj.matrix_world
         self.weights = [[] for i in repeat(None, len(mesh.vertices))]
-
         # Used to map mesh materials indices to our model material indices
         self.materials = []
         self.gen_material_indices(model_materials)
@@ -320,12 +319,11 @@ def save(self, context, filepath,
          use_weight_min=False,
          use_weight_min_threshold=0.010097,
          ):
-
+         
     # Disabled for now
     use_armature_pose = False
     use_frame_start = 0
     use_frame_end = 1
-
     # Apply unit conversion factor to the scale
     if apply_unit_scale:
         global_scale /= shared.calculate_unit_scale_factor(context.scene)
@@ -353,7 +351,6 @@ def save(self, context, filepath,
                                                   use_selection,
                                                   use_armature,
                                                   quiet=False)
-
     # If we were unable to detect any valid rigged objects
     # we'll use the selected mesh.
     if len(objects) == 0:
@@ -447,7 +444,7 @@ def save_model(self, context, filepath, armature, objects,
                ):
     # Disabled
     use_armature_pose = False
-
+    
     scene = context.scene
 
     model = XModel.Model("$export")

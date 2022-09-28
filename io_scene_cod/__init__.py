@@ -506,7 +506,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         name="Vertex Colors",
         description=("Export vertex colors "
                      "(if disabled, white color will be used)"),
-        default=True
+        default=False
     )
 
     #  White is 1 (opaque), black 0 (invisible)
@@ -557,7 +557,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         name="Armature",
         description=("Export bones "
                      "(if disabled, only a 'tag_origin' bone will be written)"),  # nopep8
-        default=True
+        default=False
     )
 
     """
@@ -602,11 +602,10 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         from . import export_xmodel
         start_time = time.perf_counter()
-
+        
         ignore = ("filter_glob", "check_existing")
         result = export_xmodel.save(self, context,
                                     **self.as_keywords(ignore=ignore))
-
         if not result:
             self.report({'INFO'}, "Export finished in %.4f sec." %
                         (time.perf_counter() - start_time))
@@ -619,7 +618,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
     def poll(self, context):
         return (context.scene is not None)
 
-        def check(self, context):
+    def check(self, context):
         '''
         This is a modified version of the ExportHelper check() method
         This one provides automatic checking for the file extension
