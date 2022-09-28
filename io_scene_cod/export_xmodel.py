@@ -52,7 +52,7 @@ def mesh_triangulate(mesh, vertex_cleanup):
 def gather_exportable_objects(self, context,
                               use_selection,
                               use_armature,
-                              use_armature_filter=True,
+                              use_armature_filter=False,
                               quiet=True):
     '''
     Gather relevent objects for export
@@ -351,6 +351,7 @@ def save(self, context, filepath,
                                                   use_selection,
                                                   use_armature,
                                                   quiet=False)
+    
     # If we were unable to detect any valid rigged objects
     # we'll use the selected mesh.
     if len(objects) == 0:
