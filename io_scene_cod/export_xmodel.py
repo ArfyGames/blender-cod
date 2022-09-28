@@ -46,7 +46,7 @@ def mesh_triangulate(mesh, vertex_cleanup):
     bm.to_mesh(mesh)
     bm.free()
 
-    mesh.update(calc_tessface=True)
+    mesh.update()
 
 
 def gather_exportable_objects(self, context,
@@ -102,7 +102,7 @@ def gather_exportable_objects(self, context,
         if ob.type != 'MESH':
             continue
 
-        if use_selection and not ob.select:
+        if use_selection and not ob.select_get():
             continue
 
         if len(ob.material_slots) < 1:
@@ -145,7 +145,7 @@ def material_gen_image_dict(material):
     if not material:
         return out
     unk_count = 0
-    for slot in material.texture_slots:
+    for slot in material.texture_paint_slots:
         if slot is None:
             continue
         texture = slot.texture
@@ -240,7 +240,7 @@ class ExportMesh(object):
             self.mesh.calc_normals()
 
         uv_layer = self.mesh.uv_layers.active
-        vc_layer = self.mesh.tessface_vertex_colors.active
+        """vc_layer = self.mesh.tessface_vertex_colors.active
 
         # Get the vertex layer to use for alpha
         if not use_alpha:
@@ -254,8 +254,9 @@ class ExportMesh(object):
             for layer in self.mesh.tessface_vertex_colors:
                 if layer is not vc_layer:
                     vca_layer = layer
-                    break
-
+                    break"""
+        vca_layer = None
+        vc_layer = None
         alpha_default = 1.0
 
         # mesh.calc_tessface()  # Is this needed?
@@ -468,8 +469,10 @@ def save_model(self, context, filepath, armature, objects,
 
         # to_mesh() applies enabled modifiers only
         try:
-            mesh = ob.to_mesh(
-                scene=scene, apply_modifiers=True, settings=modifier_quality)
+            #mesh = ob.to_mesh(
+                #scene=scene, apply_modifiers=True, settings=modifier_quality)
+            mesh = ob.to_mesh()   
+            
         except RuntimeError:
             mesh = None
 
@@ -495,13 +498,14 @@ def save_model(self, context, filepath, armature, objects,
             mesh.user_clear()
             bpy.data.meshes.remove(mesh)
             continue
-        if len(mesh.tessfaces) < 1:
-            _skip_notice(ob.name, mesh.name, "No faces")
-            mesh.user_clear()
-            bpy.data.meshes.remove(mesh)
-            continue
+        #if len(mesh.loop_triangles) < 1:
+        #    _skip_notice(ob.name, mesh.name, "No faces")
+        #    mesh.user_clear()
+        #    #bpy.data.meshes.remove(mesh)
+        #    ob.to_mesh_clear()
+        #    continue
 
-        if not mesh.tessface_uv_textures:
+        if not mesh.uv_layers:
             _skip_notice(ob.name, mesh.name, "No UV texture, not unwrapped?")
             mesh.user_clear()
             bpy.data.meshes.remove(mesh)
@@ -583,7 +587,8 @@ def save_model(self, context, filepath, armature, objects,
 
     # Remove meshes, which were made by to_mesh()
     for mesh in meshes:
-        mesh.clear()
+        ob.to_mesh_clear()
+        #mesh.clear()
 
     # Do we need this scene.update?
-    context.scene.update()
+    #context.scene.update()

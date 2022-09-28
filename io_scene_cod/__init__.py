@@ -33,9 +33,9 @@ import os
 
 bl_info = {
     "name": "Blender-CoD",
-    "author": "CoDEmanX, Flybynyt, SE2Dev",
-    "version": (0, 5, 2),
-    "blender": (2, 78, 0),
+    "author": "CoDEmanX, Flybynyt, SE2Dev, Arfy",
+    "version": (0, 5, 3),
+    "blender": (3, 0, 0),
     "location": "File > Import  |  File > Export",
     "description": "Import-Export XModel_Export, XAnim_Export",
     "warning": "Alpha version, please report any bugs!",
@@ -73,13 +73,13 @@ def update_scale_length(self, context):
 class BlenderCoD_Preferences(AddonPreferences):
     bl_idname = __name__
 
-    use_submenu = BoolProperty(
+    use_submenu: BoolProperty(
         name="Group Import/Export Buttons",
         default=False,
         update=update_submenu_mode
     )
 
-    unit_enum = EnumProperty(
+    unit_enum: EnumProperty(
         items=(('CENTI', "Centimeters", ""),
                ('MILLI', "Millimeters", ""),
                ('METER', "Meters", ""),
@@ -97,7 +97,7 @@ class BlenderCoD_Preferences(AddonPreferences):
         update=update_scale_length
     )
 
-    scale_length = FloatProperty(
+    scale_length: FloatProperty(
         name="Unit Scale",
         description="Scale factor to use, follows the same conventions as "
                     "Blender's unit scale in the scene properties\n"
@@ -250,7 +250,7 @@ class ImportXModel(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         from . import import_xmodel
-        start_time = time.clock()
+        start_time = time.process_time()
 
         keywords = self.as_keywords(ignore=("filter_glob",
                                             "check_existing",
@@ -260,7 +260,7 @@ class ImportXModel(bpy.types.Operator, ImportHelper):
 
         if not result:
             self.report({'INFO'}, "Import finished in %.4f sec." %
-                        (time.clock() - start_time))
+                        (time.process_time() - start_time))
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, result)
@@ -393,7 +393,7 @@ class ImportXAnim(bpy.types.Operator, ImportHelper):
 
     def execute(self, context):
         from . import import_xanim
-        start_time = time.clock()
+        start_time = time.process_time()
 
         ignored_properties = ("filter_glob", "files", "apply_unit_scale")
         result = import_xanim.load(
@@ -404,7 +404,7 @@ class ImportXAnim(bpy.types.Operator, ImportHelper):
 
         if not result:
             self.report({'INFO'}, "Import finished in %.4f sec." %
-                        (time.clock() - start_time))
+                        (time.process_time() - start_time))
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, result)
@@ -451,7 +451,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
     bl_options = {'PRESET'}
 
     filename_ext = ".XMODEL_EXPORT"
-    filter_glob = StringProperty(
+    filter_glob: StringProperty(
         default="*.XMODEL_EXPORT;*.XMODEL_BIN", options={'HIDDEN'})
 
     # List of operator properties, the attributes will be assigned
@@ -463,7 +463,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         'XMODEL_BIN': '.XMODEL_BIN'
     }
 
-    target_format = EnumProperty(
+    target_format: EnumProperty(
         name="Format",
         description="The target format to export to",
         items=(('XMODEL_EXPORT', "XMODEL_EXPORT",
@@ -473,7 +473,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         default='XMODEL_EXPORT'
     )
 
-    version = EnumProperty(
+    version: EnumProperty(
         name="Version",
         description="XMODEL_EXPORT format version for export",
         items=(('5', "Version 5", "vCoD, CoD:UO"),
@@ -482,27 +482,27 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         default='6'
     )
 
-    use_selection = BoolProperty(
+    use_selection: BoolProperty(
         name="Selection only",
         description=("Export selected meshes only "
                      "(object or weight paint mode)"),
         default=False
     )
 
-    global_scale = FloatProperty(
+    global_scale: FloatProperty(
         name="Scale",
         min=0.001, max=1000.0,
         default=1.0,
     )
 
-    apply_unit_scale = BoolProperty(
+    apply_unit_scale: BoolProperty(
         name="Apply Unit",
         description="Scale all data according to current Blender size,"
                     " to match CoD units",
         default=True,
     )
 
-    use_vertex_colors = BoolProperty(
+    use_vertex_colors: BoolProperty(
         name="Vertex Colors",
         description=("Export vertex colors "
                      "(if disabled, white color will be used)"),
@@ -510,7 +510,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
     )
 
     #  White is 1 (opaque), black 0 (invisible)
-    use_vertex_colors_alpha = BoolProperty(
+    use_vertex_colors_alpha: BoolProperty(
         name="Calculate Alpha",
         description=("Automatically calculate alpha channel for vertex colors "
                      "by averaging the RGB color values together "
@@ -518,7 +518,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         default=False
     )
 
-    use_vertex_colors_alpha_mode = EnumProperty(
+    use_vertex_colors_alpha_mode: EnumProperty(
         name="Vertex Alpha Source Layer",
         description="The target vertex color layer to use for calculating the alpha values",  # nopep8
         items=(('PRIMARY', "Active Layer",
@@ -530,7 +530,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         default='PRIMARY'
     )
 
-    use_vertex_cleanup = BoolProperty(
+    use_vertex_cleanup: BoolProperty(
         name="Clean Up Vertices",
         description=("Try this if you have problems converting to xmodel. "
                      "Skips vertices which aren't used by any face "
@@ -538,13 +538,13 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         default=False
     )
 
-    apply_modifiers = BoolProperty(
+    apply_modifiers: BoolProperty(
         name="Apply Modifiers",
         description="Apply all mesh modifiers (except Armature)",
         default=False
     )
 
-    modifier_quality = EnumProperty(
+    modifier_quality: EnumProperty(
         name="Modifier Quality",
         description="The quality at which to apply mesh modifiers",
         items=(('PREVIEW', "Preview", ""),
@@ -553,7 +553,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         default='PREVIEW'
     )
 
-    use_armature = BoolProperty(
+    use_armature: BoolProperty(
         name="Armature",
         description=("Export bones "
                      "(if disabled, only a 'tag_origin' bone will be written)"),  # nopep8
@@ -583,14 +583,14 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
     )
     """
 
-    use_weight_min = BoolProperty(
+    use_weight_min: BoolProperty(
         name="Minimum Bone Weight",
         description=("Try this if you get 'too small weight' "
                      "errors when converting"),
         default=False,
     )
 
-    use_weight_min_threshold = FloatProperty(
+    use_weight_min_threshold: FloatProperty(
         name="Threshold",
         description="Smallest allowed weight (minimum value)",
         default=0.010097,
@@ -601,7 +601,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
 
     def execute(self, context):
         from . import export_xmodel
-        start_time = time.clock()
+        start_time = time.process_time()
 
         ignore = ("filter_glob", "check_existing")
         result = export_xmodel.save(self, context,
@@ -609,7 +609,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
 
         if not result:
             self.report({'INFO'}, "Export finished in %.4f sec." %
-                        (time.clock() - start_time))
+                        (time.process_time() - start_time))
             return {'FINISHED'}
         else:
             self.report({'ERROR'}, result)
@@ -618,41 +618,6 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
     @classmethod
     def poll(self, context):
         return (context.scene is not None)
-
-    def check(self, context):
-        '''
-        This is a modified version of the ExportHelper check() method
-        This one provides automatic checking for the file extension
-         based on what 'target_format' is (through 'format_ext_map')
-        '''
-        import os
-        from bpy_extras.io_utils import _check_axis_conversion
-        change_ext = False
-        change_axis = _check_axis_conversion(self)
-
-        check_extension = self.check_extension
-
-        if check_extension is not None:
-            filepath = self.filepath
-            if os.path.basename(filepath):
-                # If the current extension is one of the valid extensions
-                #  (as defined by this class), strip the extension, and ensure
-                #  that it has the correct one
-                # (needed when switching extensions)
-                base, ext = os.path.splitext(filepath)
-                if ext[1:] in self.format_ext_map:
-                    filepath = base
-                target_ext = self.format_ext_map[self.target_format]
-                filepath = bpy.path.ensure_ext(filepath,
-                                               target_ext
-                                               if check_extension
-                                               else "")
-
-                if filepath != self.filepath:
-                    self.filepath = filepath
-                    change_ext = True
-
-        return (change_ext or change_axis)
 
     # Extend ExportHelper invoke function to support dynamic default values
     def invoke(self, context, event):
@@ -674,7 +639,7 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         # Calculate number of selected mesh objects
         if context.mode in ('OBJECT', 'PAINT_WEIGHT'):
             meshes_selected = len(
-                [m for m in bpy.data.objects if m.type == 'MESH' and m.select])
+                [m for m in bpy.data.objects if m.type == 'MESH' and m.select_get()])
         else:
             meshes_selected = 0
 
@@ -684,11 +649,11 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
         row = layout.row(align=True)
         row.prop(self, "global_scale")
         sub = row.row(align=True)
-        sub.prop(self, "apply_unit_scale", text="", icon='NDOF_TRANS')
+        sub.prop(self, "apply_unit_scale", text="", icon='CHECKBOX_HLT')
 
         # Axis?
 
-        sub = layout.split(0.5)
+        sub = layout.split(factor = 0.5)
         sub.prop(self, 'apply_modifiers')
         sub = sub.row()
         sub.enabled = self.apply_modifiers
@@ -705,8 +670,8 @@ class ExportXModel(bpy.types.Operator, ExportHelper):
             sub = layout.split()
             sub.enabled = (self.use_vertex_colors and
                            self.use_vertex_colors_alpha)
-            sub = sub.split(0.5)
-            sub.label("Vertex Alpha Layer")
+            sub = sub.split(factor = 0.5)
+            sub.label(text = "Vertex Alpha Layer")
             sub.prop(self, 'use_vertex_colors_alpha_mode', text="")
 
         layout.prop(self, 'use_vertex_cleanup')
@@ -861,14 +826,14 @@ class ExportXAnim(bpy.types.Operator, ExportHelper):
 
     def execute(self, context):
         from . import export_xanim
-        start_time = time.clock()
+        start_time = time.process_time()
         result = export_xanim.save(
             self,
             context,
             **self.as_keywords(ignore=("filter_glob", "check_existing")))
 
         if not result:
-            msg = "Export finished in %.4f sec." % (time.clock() - start_time)
+            msg = "Export finished in %.4f sec." % (time.process_time() - start_time)
             self.report({'INFO'}, msg)
             return {'FINISHED'}
         else:
@@ -1042,21 +1007,30 @@ def menu_func_import_submenu(self, context):
 def menu_func_export_submenu(self, context):
     self.layout.menu(Export_SubMenu.bl_idname, text="Call of Duty")
 
+classes = (
+    BlenderCoD_Preferences,
+    ImportXModel,
+    ImportXAnim,
+    ExportXModel,
+    ExportXAnim,
+    Import_SubMenu,
+    Export_SubMenu
+)
 
 def register():
-    bpy.utils.register_module(__name__)
-    preferences = bpy.context.user_preferences.addons[__name__].preferences
+    for cls in classes:
+        bpy.utils.register_class(cls)
+        
+    preferences = bpy.context.preferences.addons[__name__].preferences
 
-    # Each of these appended functions is executed every time the
-    # corresponding menu list is shown
     if not preferences.use_submenu:
-        bpy.types.INFO_MT_file_import.append(menu_func_xmodel_import)
-        bpy.types.INFO_MT_file_import.append(menu_func_xanim_import)
-        bpy.types.INFO_MT_file_export.append(menu_func_xanim_export)
-        bpy.types.INFO_MT_file_export.append(menu_func_xmodel_export)
+        bpy.types.TOPBAR_MT_file_import.append(menu_func_xmodel_import)
+        bpy.types.TOPBAR_MT_file_import.append(menu_func_xanim_import)
+        bpy.types.TOPBAR_MT_file_export.append(menu_func_xanim_export)
+        bpy.types.TOPBAR_MT_file_export.append(menu_func_xmodel_export)
     else:
-        bpy.types.INFO_MT_file_import.append(menu_func_import_submenu)
-        bpy.types.INFO_MT_file_export.append(menu_func_export_submenu)
+        bpy.types.TOPBAR_MT_file_import.append(menu_func_import_submenu)
+        bpy.types.TOPBAR_MT_file_export.append(menu_func_export_submenu)
 
     # Set the global 'plugin_preferences' variable for each module
     from . import shared as shared
@@ -1064,17 +1038,16 @@ def register():
 
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
+    for cls in classes:
+        bpy.utils.unregister_class(cls)
+        
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_xmodel_import)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_xanim_import)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_xmodel_export)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_xanim_export)
 
-    # You have to try to unregister both types of the menus here because
-    # the preference will have already been changed by the time this func runs
-    bpy.types.INFO_MT_file_import.remove(menu_func_xmodel_import)
-    bpy.types.INFO_MT_file_import.remove(menu_func_xanim_import)
-    bpy.types.INFO_MT_file_export.remove(menu_func_xmodel_export)
-    bpy.types.INFO_MT_file_export.remove(menu_func_xanim_export)
-
-    bpy.types.INFO_MT_file_import.remove(menu_func_import_submenu)
-    bpy.types.INFO_MT_file_export.remove(menu_func_export_submenu)
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import_submenu)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export_submenu)
 
 if __name__ == "__main__":
     register()
