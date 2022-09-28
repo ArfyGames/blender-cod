@@ -288,7 +288,8 @@ class ExportMesh(object):
                 colors = [(1.0, 1.0, 1.0, alpha_default)] * 4
             for i, loop_index in enumerate(polygon.loop_indices):
                 loop = self.mesh.loops[loop_index]
-                uv = tuple(uv_layer.data[loop_index].uv)
+                mv = tuple(uv_layer.data[loop_index].uv)
+                uv = (mv[0], 1-mv[1])
                 vert = XModel.FaceVertex(
                     loop.vertex_index, loop.normal, colors[i], uv)
                 face.indices[i] = vert
